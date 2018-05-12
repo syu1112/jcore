@@ -1,7 +1,7 @@
 package demo.model;
 
 import demo.common.Constant;
-import com.jfcore.jfinal.base.JfModel;
+import com.jcore.jfinal.base.JfModel;
 import com.jfinal.ext.plugin.tablebind.TableBind;
 
 @TableBind(configName = Constant.db_dataSource, tableName = "user_info", pkName = "id")

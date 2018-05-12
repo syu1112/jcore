@@ -1,9 +1,9 @@
 package demo.controller;
 
 import demo.model.User;
-import com.jfcore.jfinal.base.JfController;
-import com.jfcore.web.vo.JsonRtn;
-import com.jfcore.web.vo.RtnFactory;
+import com.jcore.jfinal.base.JfController;
+import com.jcore.web.vo.JsonRtn;
+import com.jcore.web.vo.RtnFactory;
 import com.jfinal.ext.route.ControllerBind;
 
 @ControllerBind( controllerKey = "/test")
