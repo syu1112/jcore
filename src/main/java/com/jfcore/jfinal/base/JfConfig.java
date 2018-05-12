@@ -112,16 +112,20 @@ public class JfConfig extends JFinalConfig {
 //        wc.setEncodingAesKey(prop.get("wxa.encodingAesKey", ""));
 //        WxaConfigKit.setWxaConfig(wc);
 
-        System.out.println("##################################");
-        System.out.println("############jfcore start##########");
-        System.out.println("##################################");
+        System.out.println(getBannerText());
     }
 
     @Override
     public void beforeJFinalStop() {
         super.beforeJFinalStop();
-        System.out.println("##################################");
-        System.out.println("############jfcore stop###########");
-        System.out.println("##################################");
+        System.out.println("jfcore stop!");
+    }
+
+    public static String getBannerText() {
+        return   "     ___________  ___  ____\n" +
+                " __ / / ___/ __ \\/ _ \\/ __/\n" +
+                "/ // / /__/ /_/ / , _/ _/  \n" +
+                "\\___/\\___/\\____/_/|_/___/  \n" +
+                "                                ";
     }
 }

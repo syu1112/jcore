@@ -1,13 +1,12 @@
 package com.jfcore.kit;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.jfcore.util.codec.MD5Codec;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -41,37 +40,113 @@ public class HttpKit {
     // }
 
     public static void main(String[] args) throws Exception {
-        String url = "http://www.sina.com.cn/";
+//        String url = "http://www.baidu.com/";
+//
+//        HttpKit http = new HttpKit();
+//        http.createHttpGetProxy(url, "122.183.139.98", "8080");
+//        http.executeGet();
+//        System.out.println(http.getEntityString());
+//        http.close();
+        /**
+         * 阅图Lite    tbl=graphic_tbl
+         * 古今通      tbl=gujintong
+         * 世界大观    tbl=shijiedaguan
+         * 养生文摘    tbl=yangshengwenzhai
+         * 幽默人生    tbl=youmorensheng
+         * 鸟语花香    tbl=niaoyuhuaxiang
+         * 美人美景    tbl=meirenmeijing
+         * 最新相册    tbl=zuixinxiangce
+         * 民间百态    tbl=minjianbaitai
+         * 珍贵照片集  tbl=zhenguizhaopianji
+          */
 
-        HttpKit http = new HttpKit(url);
+        // https://im.meiriv.com/api/get.php?type=GetNew&id=1&tbl=graphic_tbl
+        // https://www.eraeve.cc/api/get.php?type=GetGraphic&id=1055&tbl=graphic_tbl
+
+        /**
+         * 名人画报(4页)
+         */
+        //精选列表
+        HttpKit http = new HttpKit();
+        http.createHttpGet("https://api.happylife2010.com/api/5acdfc55d0f7f?page=4&count=10");
+        http.httpGet.setHeader("version", "v2.0");
         http.executeGet();
         System.out.println(http.getEntityString());
-        http.close();
+
+
+
+//        url = "http://res1.eqh5.com/group2/M00/96/AB/yq0KXlatCSSAcJm8AADCZwrwjlY444.jpg";
+//        http = new HttpKit();
+//        http.createHttpGet(url);
+//        http.executeGet();
+//        FileUtil.writeByteArrayToFile("c:/var/yq0KXlatCSSAcJm8AADCZwrwjlY444.jpg", http.getEntityFile());
+//        http.close();
+    }
+
+    private static String getSign(Map<String, Object> dataMap) {
+        dataMap.put("client_version", "1");
+        String[] keys = new String[dataMap.size()];
+        int i=0;
+        for (String key: dataMap.keySet()) {
+            keys[i] = key;
+            i++;
+        }
+        Arrays.sort(keys);
+
+        String str = "";
+        for (String key: keys) {
+            str += key + dataMap.get(key);
+        }
+        return MD5Codec.encode(MD5Codec.encode(str).toUpperCase() + "s28hpnkwh*]sf8Gh").toUpperCase();
     }
 
     public HttpKit() {
         createHttpClient();
     }
-
-    public HttpKit(String url) {
-        createHttpClient();
-        createHttpGet(url);
-    }
-
-    public CloseableHttpClient createHttpClient() {
+    
+    private CloseableHttpClient createHttpClient() {
         httpClient = HttpClients.createDefault();
         return httpClient;
     }
-
+    
     public HttpGet createHttpGet(String url) {
         httpGet = new HttpGet(url);
-        // httpGet.setHeader("", "");
         return httpGet;
     }
 
     public HttpPost createHttpPost(String url) throws Exception {
         httpPost = new HttpPost(url);
         return httpPost;
+    }
+    
+    @SuppressWarnings("deprecation")
+    public HttpPost createHttpPostProxy(String url, String hostname, String port) {
+        httpPost = new HttpPost(url);
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(5000)
+                .setConnectTimeout(5000)
+                .setConnectionRequestTimeout(5000)
+                .setStaleConnectionCheckEnabled(true)
+                .setProxy(new HttpHost(hostname, Integer.parseInt(port)))
+                .build();
+        httpPost.setConfig(requestConfig);
+        System.out.println("当前使用代理："+hostname+":"+port);
+        return httpPost;
+    }
+
+    @SuppressWarnings("deprecation")
+    public HttpGet createHttpGetProxy(String url, String hostname, String port) {
+        httpGet = new HttpGet(url);
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(5000)
+                .setConnectTimeout(5000)
+                .setConnectionRequestTimeout(5000)
+                .setStaleConnectionCheckEnabled(true)
+                .setProxy(new HttpHost(hostname, Integer.parseInt(port)))
+                .build();
+        httpGet.setConfig(requestConfig);
+        System.out.println("当前使用代理："+hostname+":"+port);
+        return httpGet;
     }
 
     public HttpEntity executeGet() throws Exception {
